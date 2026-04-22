@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assivo — Mijn Projecten</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <nav>
+        <div class="nav-inner container">
+            <div class="logo">Assivo</div>
+            <a href="/logout" class="btn-sm">Uitloggen</a>
+        </div>
+    </nav>
+
+    <main class="container">
+        <h1>Hoi {{ naam }} 👋</h1>
+        <p class="subtitle">Hier zie je al je projecten en de voortgang.</p>
+
+        {% if projecten %}
+        <div class="project-grid">
+            {% for p in projecten %}
+            <a href="/project/{{ p.id }}" class="project-card">
+                <div class="project-top">
+                    <h3>{{ p.naam }}</h3>
+                    <span class="badge {{ p.status | lower | replace(' ', '-') }}">{{ p.status }}</span>
+                </div>
+                <p>{{ p.beschrijving or 'Geen beschrijving' }}</p>
+            </a>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty">Nog geen projecten. Neem contact op met Assivo.</div>
+        {% endif %}
+    </main>
+</body>
+</html>

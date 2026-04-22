@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ project.naam }} — Assivo</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <nav>
+        <div class="nav-inner container">
+            <div class="logo">Assivo</div>
+            <div class="nav-right">
+                {% if is_admin %}<a href="/admin" class="btn-sm">← Admin</a>{% else %}<a href="/dashboard" class="btn-sm">← Projecten</a>{% endif %}
+                <a href="/logout" class="btn-sm">Uitloggen</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container">
+        <div class="project-header">
+            <div>
+                <h1>{{ project.naam }}</h1>
+                <p>{{ project.beschrijving or '' }}</p>
+            </div>
+            <span class="badge {{ project.status | lower | replace(' ', '-') }}">{{ project.status }}</span>
+        </div>
+
+        {% if is_admin %}
+        <form method="POST" action="/admin/project/{{ project.id }}/status" class="status-form">
+            <select name="status">
+                <option {% if project.status == 'In behandeling' %}selected{% endif %}>In behandeling</option>
+                <option {% if project.status == 'In ontwikkeling' %}selected{% endif %}>In ontwikkeling</option>
+                <option {% if project.status == 'Review' %}selected{% endif %}>Review</option>
+                <option {% if project.status == 'Afgerond' %}selected{% endif %}>Afgerond</option>
+            </select>
+            <button type="submit" class="btn-sm">Opslaan</button>
+        </form>
+        {% endif %}
+
+        <div class="grid-2 mt">
+            <!-- TAKEN -->
+            <section class="card">
+                <h2>Taken</h2>
+                {% if is_admin %}
+                <form method="POST" action="/admin/project/{{ project.id }}/taak" class="inline-form">
+                    <input type="text" name="naam" placeholder="Taaknaam" required>
+                    <input type="date" name="deadline">
+                    <button type="submit" class="btn-sm">Toevoegen</button>
+                </form>
+                {% endif %}
+                <ul class="taak-list">
+                {% for t in taken %}
+                <li class="taak {% if t.status == 'Klaar' %}done{% endif %}">
+                    {% if is_admin %}
+                    <input type="checkbox" {% if t.status == 'Klaar' %}checked{% endif %}
+                        onchange="updateTaak({{ t.id }}, this.checked, {{ project.id }})">
+                    {% else %}
+                    <span class="taak-dot {% if t.status == 'Klaar' %}done{% endif %}"></span>
+                    {% endif %}
+                    <span>{{ t.naam }}</span>
+                    {% if t.deadline %}<span class="deadline">{{ t.deadline }}</span>{% endif %}
+                </li>
+                {% endfor %}
+                </ul>
+            </section>
+
+            <!-- BERICHTEN -->
+            <section class="card">
+                <h2>Berichten</h2>
+                <div class="chat">
+                {% for b in berichten %}
+                <div class="msg {% if b.van_admin %}admin{% else %}klant{% endif %}">
+                    <span class="msg-label">{% if b.van_admin %}Assivo{% else %}Jij{% endif %}</span>
+                    <p>{{ b.tekst }}</p>
+                </div>
+                {% endfor %}
+                </div>
+                <form method="POST" action="{% if is_admin %}/admin/project/{{ project.id }}/bericht{% else %}/project/{{ project.id }}/bericht{% endif %}">
+                    <div class="msg-input">
+                        <input type="text" name="tekst" placeholder="Stuur een bericht..." required>
+                        <button type="submit" class="btn">→</button>
+                    </div>
+                </form>
+            </section>
+        </div>
+    </main>
+
+    <script>
+    async function updateTaak(id, checked, projectId) {
+        await fetch(`/admin/taak/${id}/status`, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({status: checked ? 'Klaar' : 'Open', project_id: projectId})
+        });
+    }
+    </script>
+</body>
+</html>

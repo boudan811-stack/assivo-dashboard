@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assivo — Admin</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <nav>
+        <div class="nav-inner container">
+            <div class="logo">Assivo Admin</div>
+            <a href="/logout" class="btn-sm">Uitloggen</a>
+        </div>
+    </nav>
+
+    <main class="container">
+        <div class="grid-2">
+
+            <!-- KLANTEN -->
+            <section class="card">
+                <h2>Klanten</h2>
+                <form method="POST" action="/admin/klant/nieuw" class="inline-form">
+                    <input type="text" name="naam" placeholder="Naam" required>
+                    <input type="email" name="email" placeholder="Email" required>
+                    <input type="text" name="wachtwoord" placeholder="Wachtwoord" required>
+                    <button type="submit" class="btn">Toevoegen</button>
+                </form>
+                <table>
+                    <thead><tr><th>Naam</th><th>Email</th></tr></thead>
+                    <tbody>
+                    {% for k in klanten %}
+                    <tr><td>{{ k.naam }}</td><td>{{ k.email }}</td></tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </section>
+
+            <!-- PROJECTEN -->
+            <section class="card">
+                <h2>Nieuw Project</h2>
+                <form method="POST" action="/admin/project/nieuw" class="inline-form">
+                    <select name="klant_id" required>
+                        <option value="">Kies klant</option>
+                        {% for k in klanten %}
+                        <option value="{{ k.id }}">{{ k.naam }}</option>
+                        {% endfor %}
+                    </select>
+                    <input type="text" name="naam" placeholder="Projectnaam" required>
+                    <select name="status">
+                        <option>In behandeling</option>
+                        <option>In ontwikkeling</option>
+                        <option>Review</option>
+                        <option>Afgerond</option>
+                    </select>
+                    <textarea name="beschrijving" placeholder="Beschrijving" rows="3"></textarea>
+                    <button type="submit" class="btn">Aanmaken</button>
+                </form>
+            </section>
+        </div>
+
+        <!-- PROJECTEN OVERZICHT -->
+        <section class="card mt">
+            <h2>Alle Projecten</h2>
+            <table>
+                <thead><tr><th>Project</th><th>Status</th><th>Klant</th><th></th></tr></thead>
+                <tbody>
+                {% for p in projecten %}
+                <tr>
+                    <td>{{ p.naam }}</td>
+                    <td><span class="badge {{ p.status | lower | replace(' ', '-') }}">{{ p.status }}</span></td>
+                    <td>{{ p.klant_id }}</td>
+                    <td><a href="/admin/project/{{ p.id }}" class="btn-sm">Open</a></td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </section>
+    </main>
+</body>
+</html>

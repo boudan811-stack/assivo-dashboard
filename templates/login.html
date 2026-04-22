@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assivo — Inloggen</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="auth-page">
+    <div class="auth-box">
+        <div class="logo">Assivo</div>
+        <h2>Inloggen</h2>
+        {% if error %}<p class="error">{{ error }}</p>{% endif %}
+        <form method="POST">
+            <input type="email" name="email" placeholder="Emailadres" required>
+            <input type="password" name="wachtwoord" placeholder="Wachtwoord" required>
+            <button type="submit" class="btn">Inloggen</button>
+        </form>
+    </div>
+</body>
+</html>
