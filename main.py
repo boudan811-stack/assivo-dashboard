@@ -58,7 +58,7 @@ def logout():
 def admin():
     if not session.get("is_admin"):
         return redirect("/login")
-    klanten  = sb().table("klanten").select("*").order("created_at", desc=True).execute().data
+    klanten  = sb().table("klanten").select("*").execute().data
     projecten = sb().table("projecten").select("*").order("created_at", desc=True).execute().data
     return render_template("admin.html", klanten=klanten, projecten=projecten)
 
