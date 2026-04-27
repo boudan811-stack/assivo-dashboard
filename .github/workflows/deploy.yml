@@ -1,0 +1,22 @@
+name: Deploy naar Hetzner
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: 178.105.33.160
+          username: root
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            cd /var/www/assivo-dashboard
+            git pull origin main
+            systemctl restart assivo-dashboard
+            echo "Deploy klaar"
